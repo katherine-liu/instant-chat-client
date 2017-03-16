@@ -50,7 +50,7 @@ public class Chat implements ActionListener{
 		jframe.add(jta);
 		jframe.add(jp, BorderLayout.SOUTH);
 		jframe.setTitle(ownerId+" Chating with "+friendId);
-		jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
+		jframe.setDefaultCloseOperation(jframe.DISPOSE_ON_CLOSE);
 		jframe.setSize(300, 200);
 		jframe.setVisible(true);
 	}
