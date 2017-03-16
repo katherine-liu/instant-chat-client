@@ -1,21 +1,14 @@
 package com.client.view;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.UUID;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 import com.client.service.ManageChatFrame;
 import com.common.Message;
@@ -37,11 +30,13 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 	private CardLayout cardlayout=null;
 	private String ownerId=null;
 	private JLabel[] jlabelFriends=null;
+    private boolean mouseClickProfile = true;
+
 
 	public MainList(String ownId) {
 		this.ownerId=ownId;
 		createCard(ownId);
-		
+		//System.out.println(ownId);
 	}
 	
 	public String getOwnerId() {
@@ -67,6 +62,7 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 		jlabelFriends=new JLabel[50];
 		for(int i=0;i<jlabelFriends.length;i++){
 			jlabelFriends[i]=new JLabel(i+1+"", new ImageIcon("src/pic/pig.png"), JLabel.LEFT);
+
 //			jlabelFriends[i].setOpaque(true);
 			jlabelFriends[i].setEnabled(false);
 			//setting own label to enable
@@ -152,7 +148,7 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 //		cardlayout.show(jframe.getContentPane(), "1");
 		jframe.setTitle(ownId);
 		jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
-		jframe.setSize(140, 400);
+		jframe.setSize(300, 400);
 		jframe.setVisible(true);
 		
 	}
@@ -196,17 +192,33 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		if(arg0.getClickCount()==2){
-			String friendId=((JLabel)arg0.getSource()).getText();
+	public void mouseClicked(MouseEvent mouseEvent) {
+        String friendId=((JLabel)mouseEvent.getSource()).getText();
+        // Distinguish between a single click and a double click
+        if (mouseEvent.getClickCount() == 2) {
 			Chat chat=new Chat(this.ownerId, friendId);
 			//add chat frame
 			ManageChatFrame.addChatFrame(this.ownerId+" "+friendId, chat);
-			
-			
-		}
-		
-	}
+            mouseClickProfile = true;
+        } else {
+            Integer timerInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty(
+                    "awt.multiClickInterval");
+            Timer timer = new Timer(timerInterval.intValue(), new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    if (mouseClickProfile) {
+                        mouseClickProfile = false; // reset flag
+                    } else {
+                        JOptionPane.showMessageDialog(jframe,
+                            generateUserProfile(friendId),
+                            "User Profile",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            });
+            timer.setRepeats(false);
+            timer.start();
+        }
+    }
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
@@ -233,5 +245,20 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 		// TODO Auto-generated method stub
 		
 	}
+
+	//Generate user's profile dynamically
+	private String generateUserProfile(String friendId) {
+	    return String.format("User ID: %s %n" +
+                             "Gender: %s %n" +
+                             "Phone Number: %s %n" +
+                             "Location: %s %n" +
+                             "Wechat ID: %s %n" +
+                             "Motto: MAGA!!!",
+                            friendId,
+                            Integer.parseInt(friendId) % 2 == 0 ? "Male" : "Female",
+                            Integer.parseInt(friendId) % 2 == 0 ? "2136186108" : "6785490350",
+                            Integer.parseInt(friendId) % 2 == 0 ? "China" : "United States",
+                            UUID.randomUUID().toString().substring(0,7));
+    }
 	
 }
