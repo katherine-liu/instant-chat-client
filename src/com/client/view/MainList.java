@@ -201,8 +201,9 @@ public class MainList implements ActionListener, MouseListener, MouseMotionListe
 			ManageChatFrame.addChatFrame(this.ownerId+" "+friendId, chat);
             mouseClickProfile = true;
         } else {
-            Integer timerInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty(
-                    "awt.multiClickInterval");
+//            Integer timerInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty(
+//                    "awt.multiClickInterval");
+			Integer timerInterval = 200;
             Timer timer = new Timer(timerInterval.intValue(), new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     if (mouseClickProfile) {
